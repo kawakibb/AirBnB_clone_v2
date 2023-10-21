@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+
 import cmd
 from models import storage
 from models.base_model import BaseModel
@@ -8,69 +9,48 @@ from models.amenity import Amenity
 from models.place import Place
 from models.review import Review
 
+
 class HBNBCommand(cmd.Cmd):
     prompt = "(hbnb) "
-    classes = {"BaseModel": BaseModel, "State": State, "City": City, "Amenity": Amenity, "Place": Place, "Review": Review}
+    classes = {"BaseModel": BaseModel,
+               "State": State,
+               "City": City,
+               "Amenity": Amenity,
+               "Place": Place,
+               "Review": Review}
 
-    def do_create(self, args):
-        """Create a new instance of a specified class"""
-        if not args:
+    def do_create(self, arg):
+        """Create a new instance of a class with given parameters."""
+        if not arg:
             print("** class name missing **")
             return
 
-        args = args.split()
-        class_name = args[0]
-        if class_name not in self.classes:
+        class_name, *params = arg.split(" ")
+
+        if class_name not in HBNBCommand.classes:
             print("** class doesn't exist **")
             return
 
-        new_instance = self.classes[class_name]()
-        new_instance.save()
-        print(new_instance.id)
+        params = [p.split('=') for p in params if '=' in p]
+        obj_dict = {}
+        for p in params:
+            key, value = p[0], p[1]
+            value = value.replace('"', '').replace('_', ' ')
+            if '.' in value:
+                try:
+                    value = float(value)
+                except ValueError:
+                    pass
+                else:
+                    try:
+                        value = int(value)
+                    except ValueError:
+                        pass
+                    obj_dict[key] = value
 
-    def do_show(self, args):
-        """Show the string representation of an instance"""
-        if not args:
-            print("** class name missing **")
-            return
+                    new_obj = eval(f"{class_name}(**obj_dict)")
+                    new_obj.save()
+                    print(new_obj.id)
 
-        args = args.split()
-        class_name = args[0]
-        if class_name not in self.classes:
-            print("** class doesn't exist **")
-            return
-
-        if len(args) < 2:
-            print("** instance id missing **")
-            return
-
-        obj_id = args[1]
-        obj_key = "{}.{}".format(class_name, obj_id)
-        objects = storage.all(self.classes[class_name])
-        if obj_key in objects:
-            print(objects[obj_key])
-        else:
-            print("** no instance found **")
-
-    # Add similar methods for do_destroy, do_all, and do_update
-
-    def emptyline(self):
-        pass
-
-    def do_quit(self, args):
-        """Quit command to exit the program"""
-        return True
-
-    def do_EOF(self, args):
-        """Handle EOF (Ctrl+D) to exit the program"""
-        print("")
-        return True
- 
-
-    def help_create(self):
-        """ Help information for the create method """
-        print("Creates a class of any type")
-        print("[Usage]: create <className>\n")
-
-if __name__ == "__main__":
-    HBNBCommand().cmdloop()
+                    if __name__ == "__main__":
+                        HBNBCommand().cmdloop()
