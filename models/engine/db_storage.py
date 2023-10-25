@@ -17,7 +17,7 @@ from models.amenity import Amenity
 
 class DBStorage:
     """
-    create tables in environmental
+    this class create tables in environmental
     """
     __engine = None
     __session = None
@@ -38,7 +38,7 @@ class DBStorage:
 
     def all(self, cls=None):
         """
-        generate  a dictionary of __object
+        generate   dictionary of __object
         """
         dic = {}
         if cls:
@@ -61,17 +61,21 @@ class DBStorage:
         self.__session.add(obj)
 
     def save(self):
+        """save """
         self.__session.commit()
 
     def delete(self, obj=None):
+        """delete """
         if obj:
             self.session.delete(obj)
 
     def reload(self):
+        """ reload """
         Base.metadata.create_all(self.__engine)
         sec = sessionmaker(bind=self.__engine, expire_on_commit=False)
         Session = scoped_session(sec)
         self.__session = Session()
 
     def close(self):
+         """close """
         self.__session.close()
