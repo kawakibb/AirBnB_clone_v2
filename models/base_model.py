@@ -1,8 +1,20 @@
 #!/usr/bin/python3
+"""the base model class"""
+from sqlalchemy.ext.declarative import declarative_base
 import uuid
+import models
 from datetime import datetime
+from sqlalchemy import Column, Integer, String, DateTime
+
+Base = declarative_base()
 
 class BaseModel:
+    """ class defines all common attributes methods"""
+
+    id = Column(String(60), unique=True, nullable=False, primary_key=True)
+    created_at = Column(DateTime, nullable=False, default=(datetime.utcnow()))
+    updated_at = Column(DateTime, nullable=False, default=(datetime.utcnow()))
+
     def __init__(self, *args, **kwargs):
         # Constructor for BaseModel
         if kwargs:
@@ -45,3 +57,11 @@ class BaseModel:
         obj_dict['created_at'] = self.created_at.strftime('%Y-%m-%dT%H:%M:%S.%f')
         obj_dict['updated_at'] = self.updated_at.strftime('%Y-%m-%dT%H:%M:%S.%f')
         return obj_dict
+    def __repr__(self):
+        """return a string representaion
+        """
+        return self.__str__()
+    def delete(self):
+        """ delete object
+        """
+        models.storage.delete(self)

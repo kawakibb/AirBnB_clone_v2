@@ -11,9 +11,10 @@ from models.place import Place
 from models.review import Review
 from models.state import State
 from models.user import User
+import shlex
 
-classes = {"Amenity": Amenity, "BaseModel": BaseModel, "City": City,
-           "Place": Place, "Review": Review, "State": State, "User": User}
+#classes = {"Amenity": Amenity, "BaseModel": BaseModel, "City": City,
+#          "Place": Place, "Review": Review, "State": State, "User": User}
 
 
 class FileStorage:
@@ -59,7 +60,7 @@ class FileStorage:
             pass
 
     def delete(self, obj=None):
-        """delete obj from __objects if it’s inside"""
+        """delete obj from __objects if inside"""
         if obj is not None:
             key = obj.__class__.__name__ + '.' + obj.id
             if key in self.__objects:
